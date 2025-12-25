@@ -2,6 +2,12 @@
 
 This repository contains OpenAPI 3.1.0 specifications for UniFi Network and Protect APIs, automatically extracted from UniFi controllers.
 
+## ⚠️ Disclaimer
+
+**This repository is not supported by Ubiquiti Inc.**
+
+These OpenAPI specifications are extracted directly from the UniFi Network Application and UniFi Protect Application. While the specifications come from the official applications, this repository is community-maintained and not an official Ubiquiti project.
+
 ## Available Versions
 
 ### UniFi Network API
@@ -59,4 +65,4 @@ openapi-python-client generate --path unifi-protect/6.2.72.json --output-path un
 
 ## Last Updated
 
-{datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
+2025-12-25
