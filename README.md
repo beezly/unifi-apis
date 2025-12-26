@@ -35,6 +35,31 @@ unifi-protect/
   └── ...
 ```
 
+## Documentation
+
+Interactive HTML documentation is automatically generated from the OpenAPI specifications and published via GitHub Pages.
+
+View the documentation at: `https://yourusername.github.io/unifi-apis/`
+
+### Building Documentation Locally
+
+To build the documentation locally:
+
+```bash
+python3 build_docs.py
+```
+
+This will generate HTML documentation in the `docs/` directory using ReDoc.
+
+### Automatic Documentation Updates
+
+Documentation is automatically rebuilt and deployed when:
+- New OpenAPI spec files are added to `unifi-network/` or `unifi-protect/`
+- The `build_docs.py` script is updated
+- Changes are pushed to the main branch
+
+The GitHub Actions workflow handles building and committing the updated documentation automatically.
+
 ## Usage
 
 These OpenAPI specifications can be used to:
@@ -62,6 +87,20 @@ openapi-python-client generate --path unifi-protect/6.2.72.json --output-path un
 - Specifications are in OpenAPI 3.1.0 format
 - Each version is stored as a separate file for easy comparison and version management
 - Updates are published automatically when new versions are detected
+
+## Setting Up GitHub Pages
+
+To enable the documentation website:
+
+1. Go to your repository on GitHub
+2. Navigate to Settings > Pages
+3. Under "Build and deployment", select:
+   - Source: Deploy from a branch
+   - Branch: main
+   - Folder: /docs
+4. Click Save
+
+Your documentation will be available at `https://yourusername.github.io/unifi-apis/` within a few minutes.
 
 ## Last Updated
 

@@ -1,0 +1,43 @@
+name: Build Documentation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'unifi-network/**/*.json'
+      - 'unifi-protect/**/*.json'
+      - 'build_docs.py'
+      - '.github/workflows/build-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Build documentation
+      run: python3 build_docs.py
+
+    - name: Commit and push if changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add docs/
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update documentation [skip ci]"
+          git push
+        fi
