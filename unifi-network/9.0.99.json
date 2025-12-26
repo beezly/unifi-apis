@@ -1,0 +1,903 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "UniFi Network API",
+    "description": "The API provides powerful tools to manage Sites, Devices, and Clients, offering access to detailed configuration, real-time status, and live statistics. It supports insights for WiFi, Wired, and VPN clients, including connection details.",
+    "license": {},
+    "version": "9.0.99"
+  },
+  "servers": [
+    {
+      "url": "/integration"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Generic information"
+    }
+  ],
+  "paths": {
+    "/v1/sites/{siteId}/devices/{deviceId}/actions": {
+      "post": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Execute an action on a specific adopted device.",
+        "description": "Execute an action on a specific adopted device. Request body should contain action name and input arguments, if apply.",
+        "operationId": "executeDeviceAction",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Device action request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/sites": {
+      "get": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "List local sites (paginated)",
+        "description": "List local sites managed by this Network application (paginated). Setups using Multi-Site option enabled will return all created sites, while if option is disabled it will return just the default site.",
+        "operationId": "getSiteOverviewPage",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 25,
+              "maximum": 200,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Site overview page"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/devices": {
+      "get": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "List adopted devices of a site (paginated)",
+        "description": "List adopted devices of a site (paginated). Response contains basic information about site's adopted devices.",
+        "operationId": "getDeviceOverviewPage",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 25,
+              "maximum": 200,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device overview page"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/devices/{deviceId}": {
+      "get": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Get detailed information about a specific adopted device",
+        "description": "Get detailed information about a specific adopted device. Response includes more information about a single device, as well as more detailed information about device features, such as switch ports and/or access point radios",
+        "operationId": "getDeviceDetails",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device details"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/devices/{deviceId}/statistics/latest": {
+      "get": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Get latest (live) statistics of a specific adopted device",
+        "description": "Get latest (live) statistics of a specific adopted device. Response contains latest readings from a single device, such as CPU and memory utilization, uptime, uplink tx/rx rates etc",
+        "operationId": "getDeviceLatestStatistics",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Latest statistics for a device"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/clients": {
+      "get": {
+        "tags": [
+          "Clients"
+        ],
+        "summary": "List connected clients of a site (paginated)",
+        "description": "List connected clients of a site (paginated). Clients are either physical devices (computers, smartphones, connected by wire or wirelessly), or active VPN connections.",
+        "operationId": "getConnectedClientOverviewPage",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 25,
+              "maximum": 200,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Client overview page"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/info": {
+      "get": {
+        "tags": [
+          "About application"
+        ],
+        "summary": "Get application info",
+        "description": "Get generic information about the Network application",
+        "operationId": "getInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Application info"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error response": {
+        "description": "This generic error message format is used across all endpoints.",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "format": "int32",
+            "example": 400
+          },
+          "statusName": {
+            "type": "string",
+            "example": "UNAUTHORIZED"
+          },
+          "message": {
+            "type": "string",
+            "example": "Missing credentials"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-11-27T08:13:46.966Z"
+          },
+          "requestPath": {
+            "type": "string",
+            "example": "/integration/v1/sites/123"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "In case of Internal Server Error (core = 500), request ID can be used to track down the error in the server log",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          }
+        },
+        "x-tags": "Generic information"
+      },
+      "Device action request": {
+        "discriminator": {
+          "propertyName": "action",
+          "mapping": {
+            "RESTART": "#/components/schemas/Device restart request"
+          }
+        },
+        "properties": {
+          "action": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "Device restart request": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Device action request"
+          }
+        ]
+      },
+      "Site overview": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "Site overview page": {
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int32",
+            "example": 0
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "example": 25
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "example": 10
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1000
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Site overview"
+            }
+          }
+        }
+      },
+      "Device overview": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "IW HD"
+          },
+          "model": {
+            "type": "string",
+            "example": "UHDIW"
+          },
+          "macAddress": {
+            "type": "string",
+            "example": "94:2a:6f:26:c6:ca"
+          },
+          "ipAddress": {
+            "type": "string",
+            "example": "192.168.1.55"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ONLINE",
+              "OFFLINE",
+              "PENDING_ADOPTION",
+              "UPDATING",
+              "GETTING_READY",
+              "ADOPTING",
+              "DELETING",
+              "CONNECTION_INTERRUPTED",
+              "ISOLATED"
+            ]
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "switching",
+                "accessPoint",
+                "gateway"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "interfaces": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ports",
+                "radios"
+              ]
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "Device overview page": {
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int32",
+            "example": 0
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "example": 25
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "example": 10
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1000
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Device overview"
+            }
+          }
+        }
+      },
+      "Access point feature overview": {},
+      "Device details": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "IW HD"
+          },
+          "model": {
+            "type": "string",
+            "example": "UHDIW"
+          },
+          "supported": {
+            "type": "boolean"
+          },
+          "macAddress": {
+            "type": "string",
+            "example": "94:2a:6f:26:c6:ca"
+          },
+          "ipAddress": {
+            "type": "string",
+            "example": "192.168.1.55"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ONLINE",
+              "OFFLINE",
+              "PENDING_ADOPTION",
+              "UPDATING",
+              "GETTING_READY",
+              "ADOPTING",
+              "DELETING",
+              "CONNECTION_INTERRUPTED",
+              "ISOLATED"
+            ]
+          },
+          "firmwareVersion": {
+            "type": "string",
+            "example": "6.6.55"
+          },
+          "firmwareUpdatable": {
+            "type": "boolean"
+          },
+          "adoptedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provisionedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "configurationId": {
+            "type": "string",
+            "example": "7596498d2f367dc2"
+          },
+          "uplink": {
+            "$ref": "#/components/schemas/Device uplink interface overview"
+          },
+          "features": {
+            "$ref": "#/components/schemas/Device features"
+          },
+          "interfaces": {
+            "$ref": "#/components/schemas/Device physical interfaces"
+          }
+        }
+      },
+      "Device features": {
+        "properties": {
+          "switching": {
+            "$ref": "#/components/schemas/Switch feature overview",
+            "example": {}
+          },
+          "accessPoint": {
+            "$ref": "#/components/schemas/Access point feature overview",
+            "example": {}
+          }
+        }
+      },
+      "Device physical interfaces": {
+        "properties": {
+          "ports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ethernet port overview"
+            }
+          },
+          "radios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Wireless radio overview"
+            }
+          }
+        }
+      },
+      "Device uplink interface overview": {
+        "description": "Uplink interface is device's connection to the parent device in the network topology",
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "Ethernet port overview": {
+        "properties": {
+          "idx": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1,
+            "minimum": 1
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "UP",
+              "DOWN",
+              "UNKNOWN"
+            ]
+          },
+          "connector": {
+            "type": "string",
+            "enum": [
+              "RJ45",
+              "SFP",
+              "SFPPLUS",
+              "SFP28",
+              "QSFP28"
+            ]
+          },
+          "maxSpeedMbps": {
+            "type": "integer",
+            "format": "int32",
+            "example": 10000
+          },
+          "speedMbps": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1000
+          }
+        }
+      },
+      "Switch feature overview": {},
+      "Wireless radio overview": {
+        "properties": {
+          "wlanStandard": {
+            "type": "string",
+            "enum": [
+              "802.11a",
+              "802.11b",
+              "802.11g",
+              "802.11n",
+              "802.11ac",
+              "802.11ax",
+              "802.11be"
+            ]
+          },
+          "frequencyGHz": {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5",
+              "6",
+              "60"
+            ]
+          },
+          "channelWidthMHz": {
+            "type": "integer",
+            "format": "int32",
+            "example": 40
+          },
+          "channel": {
+            "type": "integer",
+            "format": "int32",
+            "example": 36
+          }
+        }
+      },
+      "Latest statistics for a device": {
+        "properties": {
+          "uptimeSec": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "lastHeartbeatAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "nextHeartbeatAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "loadAverage1Min": {
+            "type": "number",
+            "format": "double"
+          },
+          "loadAverage5Min": {
+            "type": "number",
+            "format": "double"
+          },
+          "loadAverage15Min": {
+            "type": "number",
+            "format": "double"
+          },
+          "cpuUtilizationPct": {
+            "type": "number",
+            "format": "double"
+          },
+          "memoryUtilizationPct": {
+            "type": "number",
+            "format": "double"
+          },
+          "uplink": {
+            "$ref": "#/components/schemas/Latest statistics for a device uplink interface"
+          },
+          "interfaces": {
+            "$ref": "#/components/schemas/Latest statistics for device interfaces"
+          }
+        }
+      },
+      "Latest statistics for a device uplink interface": {
+        "properties": {
+          "txRateBps": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "rxRateBps": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "Latest statistics for device interfaces": {
+        "properties": {
+          "radios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Latest statistics for wireless radio"
+            }
+          }
+        }
+      },
+      "Latest statistics for wireless radio": {
+        "properties": {
+          "frequencyGHz": {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5",
+              "6",
+              "60"
+            ]
+          },
+          "txRetriesPct": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "Client overview": {
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "WIRED": "#/components/schemas/Wired client overview",
+            "WIRELESS": "#/components/schemas/Wireless client overview",
+            "VPN": "#/components/schemas/VPN client (connection) overview",
+            "TELEPORT": "#/components/schemas/Teleport client (connection) overview"
+          }
+        },
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "connectedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ipAddress": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "Client overview page": {
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int32",
+            "example": 0
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "example": 25
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "example": 10
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1000
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Client overview"
+            }
+          }
+        }
+      },
+      "Teleport client (connection) overview": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client overview"
+          }
+        ]
+      },
+      "VPN client (connection) overview": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client overview"
+          }
+        ]
+      },
+      "Wired client overview": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "macAddress": {
+                "type": "string"
+              },
+              "uplinkDeviceId": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          }
+        ]
+      },
+      "Wireless client overview": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "macAddress": {
+                "type": "string"
+              },
+              "uplinkDeviceId": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          }
+        ]
+      },
+      "Application info": {
+        "properties": {
+          "applicationVersion": {
+            "type": "string",
+            "example": "9.1.0"
+          }
+        }
+      }
+    }
+  }
+}
