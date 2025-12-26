@@ -6,6 +6,7 @@ Automatically discovers all spec files and generates ReDoc documentation.
 
 import os
 import json
+import shutil
 from pathlib import Path
 from datetime import date
 
@@ -18,10 +19,8 @@ def get_spec_files(directory):
     return sorted([f for f in path.glob("*.json")], reverse=True)
 
 
-def generate_redoc_html(spec_path, output_path, title):
+def generate_redoc_html(spec_filename, output_path, title):
     """Generate a standalone ReDoc HTML page for a spec."""
-    relative_spec_path = os.path.relpath(spec_path, os.path.dirname(output_path))
-
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,7 +35,7 @@ def generate_redoc_html(spec_path, output_path, title):
     </style>
 </head>
 <body>
-    <redoc spec-url="{relative_spec_path}"></redoc>
+    <redoc spec-url="{spec_filename}"></redoc>
     <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
 </body>
 </html>
@@ -61,7 +60,7 @@ def generate_index_html(network_specs, protect_specs, output_path):
                     </div>
                     <div class="links">
                         <a href="network-{version}.html" class="btn btn-primary">View Documentation</a>
-                        <a href="../unifi-network/{version}.json" class="btn btn-secondary">Download Spec</a>
+                        <a href="network-{version}.json" class="btn btn-secondary">Download Spec</a>
                     </div>
                 </div>
 """
@@ -75,7 +74,7 @@ def generate_index_html(network_specs, protect_specs, output_path):
                     </div>
                     <div class="links">
                         <a href="protect-{version}.html" class="btn btn-primary">View Documentation</a>
-                        <a href="../unifi-protect/{version}.json" class="btn btn-secondary">Download Spec</a>
+                        <a href="protect-{version}.json" class="btn btn-secondary">Download Spec</a>
                     </div>
                 </div>
 """
@@ -308,12 +307,18 @@ def main():
     print(f"Found {len(network_specs)} Network API spec(s)")
     print(f"Found {len(protect_specs)} Protect API spec(s)")
 
-    # Generate ReDoc pages for each spec
+    # Copy JSON specs to docs directory and generate ReDoc pages
     for spec in network_specs:
         version = spec.stem
+        # Copy JSON spec to docs
+        dest_spec = docs_dir / f"network-{version}.json"
+        shutil.copy2(spec, dest_spec)
+        print(f"Copied: {dest_spec}")
+
+        # Generate HTML page
         output_file = docs_dir / f"network-{version}.html"
         generate_redoc_html(
-            spec,
+            f"network-{version}.json",
             output_file,
             f"UniFi Network API {version}"
         )
@@ -321,9 +326,15 @@ def main():
 
     for spec in protect_specs:
         version = spec.stem
+        # Copy JSON spec to docs
+        dest_spec = docs_dir / f"protect-{version}.json"
+        shutil.copy2(spec, dest_spec)
+        print(f"Copied: {dest_spec}")
+
+        # Generate HTML page
         output_file = docs_dir / f"protect-{version}.html"
         generate_redoc_html(
-            spec,
+            f"protect-{version}.json",
             output_file,
             f"UniFi Protect API {version}"
         )
