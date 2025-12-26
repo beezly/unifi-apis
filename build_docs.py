@@ -284,6 +284,7 @@ def generate_index_html(network_specs, protect_specs, output_path):
         <footer>
             <p>Last Updated: {date.today().strftime('%Y-%m-%d')}</p>
             <p>Generated automatically from OpenAPI specifications</p>
+            <p><a href="https://github.com/beezly/unifi-apis">View on GitHub</a></p>
         </footer>
     </div>
 </body>

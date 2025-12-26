@@ -39,7 +39,7 @@ unifi-protect/
 
 Interactive HTML documentation is automatically generated from the OpenAPI specifications and published via GitHub Pages.
 
-View the documentation at: `https://yourusername.github.io/unifi-apis/`
+**View the documentation at: [beez.ly/unifi-apis](https://beez.ly/unifi-apis)**
 
 ### Building Documentation Locally
 
@@ -58,7 +58,7 @@ Documentation is automatically rebuilt and deployed when:
 - The `build_docs.py` script is updated
 - Changes are pushed to the main branch
 
-The GitHub Actions workflow handles building and committing the updated documentation automatically.
+The GitHub Actions workflow handles building and deploying the documentation to GitHub Pages automatically.
 
 ## Usage
 
@@ -95,12 +95,10 @@ To enable the documentation website:
 1. Go to your repository on GitHub
 2. Navigate to Settings > Pages
 3. Under "Build and deployment", select:
-   - Source: Deploy from a branch
-   - Branch: main
-   - Folder: /docs
-4. Click Save
+   - Source: GitHub Actions
+4. The workflow will automatically deploy on the next push to main
 
-Your documentation will be available at `https://yourusername.github.io/unifi-apis/` within a few minutes.
+Your documentation will be available at your GitHub Pages URL within a few minutes.
 
 ## Last Updated
 
