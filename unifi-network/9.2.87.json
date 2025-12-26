@@ -1,0 +1,2196 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "UniFi Network API",
+    "description": "The API provides powerful tools to manage Sites, Devices, and Clients, offering access to detailed configuration, real-time status, and live statistics. It supports insights for WiFi, Wired, and VPN clients, including connection details.",
+    "license": {},
+    "version": "9.2.87"
+  },
+  "servers": [
+    {
+      "url": "/integration"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Generic information",
+      "description": "\n## Notes on Filtering\n\nSome `GET` and `DELETE` endpoints support filtering using the `filter` query parameter.\n\nFiltering follows a URL-safe syntax that includes:\n\n- **Property expressions**, which use various filtering functions;\n- **Compound expressions**, which combine multiple property, compound, and \"not\" expressions using logical operators like `and` and `or`;\n- **\"Not\" expressions**, which negate property, compound, and \"not\" expressions.\n\n### Property Expression Syntax\n\nA property expression follows the format: `<property>.<function>(<arguments>)`. Argument values must be separated by commas.\nExamples:\n\n- `id.eq(123)` checks if `id` is equal to `123`;\n- `name.isNotNull()` checks if `name` is not null;\n- `createdAt.in(2025-01-01, 2025-01-05)` checks if `createdAt` is either `2025-01-01` or `2025-01-05`.\n\n### Compound Expression Syntax\n\nA compound expression follows the format: `<logical-operator>(<expressions>)`.\nExpressions must separated by commas. A compound expression must contain at least two expressions.\nExamples:\n\n- `and(name.isNull(), createdAt.gt(2025-01-01))` checks if `name` is null **and** `createdAt` is greater than `2025-01-01`;\n- `or(name.isNull(), expired.isNull(), expiresAt.isNull())` check is **any** of `name`, `expired`, or `expiresAt` is null.\n\n### \"Not\" Expression Syntax\n\nTo negate an expression use the `not` function: `not(<expression>)`.\nExample:\n\n- `not(name.like('guest*'))` checks if `name` does **not**  start with `guest`.\n\n### Filterable Property Types\n\nThe table below lists all supported property types.\n\n|Type|Examples|Syntax|\n|-|-|-|\n|`STRING`|`'Hello, ''World''!'`|Wrapped in single quotes. To escape a single quote, use another single quote.|\n|`NUMBER`|`123`, `123.321`|Starts with a digit and may include an optional decimal part, using a dot as the separator.|\n|`TIMESTAMP`|`2025-01-29`, `2025-01-29T12:39:11Z`|Follows the ISO 8601 date or date-time format.|\n|`BOOLEAN`|`true`, `false`|Either `true` or `false`.|\n|`UUID`|`550e8400-e29b-41d4-a716-446655440000`|A string representation without quotes, following the 8-4-4-4-12 format.|\n\n### Filtering Functions\n\nThe table below lists all supported filtering functions.\nNot all functions support all property types, and the number of arguments may vary between functions.\n\n|Function|Arguments|Semantics|Supported property types|\n|-|-|-|-|\n|`isNull`|0|is null|all types|\n|`isNotNull`|0|is not null|all types|\n|`eq`|1|equals|all types|\n|`ne`|1|not equals|all types|\n|`gt`|1|greater than|`STRING`, `NUMBER`, `TIMESTAMP`, `UUID`|\n|`ge`|1|greater than or equals|`STRING`, `NUMBER`, `TIMESTAMP`, `UUID`|\n|`lt`|1|less than|`STRING`, `NUMBER`, `TIMESTAMP`, `UUID`|\n|`le`|1|less than or equals|`STRING`, `NUMBER`, `TIMESTAMP`, `UUID`|\n|`like`|1|matches pattern|`STRING`|\n|`in`|1 or more|one of|`STRING`, `NUMBER`, `TIMESTAMP`, `UUID`|\n|`notIn`|1 or more|not one of|`STRING`, `NUMBER`, `TIMESTAMP`, `UUID`|\n\nCertain functions may be disabled for specific properties at some endpoints due to technical or logical limitations.\nFor example, mandatory fields do not support `isNull` or `isNotNull`.\nThe documentation for each endpoint that supports filtering will have detailed information on filterable properties,\ntheir types, and the allowed functions.\n\n#### Pattern Matching (`like` Function)\n\nThe `like` function allows matching string properties using simple patterns:\n\n- `.` matches any **single** character. Example: `type.like('type.')` matches `type1`, but not `type100`;\n- `*` matches **any number** of characters. Example: `name.like('guest*')` matches `guest1` and `guest100`;\n- `\\` is used to escape `.` and `*`.\n"
+    }
+  ],
+  "paths": {
+    "/v1/sites/{siteId}/hotspot/vouchers": {
+      "get": {
+        "tags": [
+          "Hotspot Vouchers"
+        ],
+        "summary": "List Vouchers",
+        "description": "Retrieve a paginated list of Hotspot vouchers.\n\n<details>\n<summary>Filterable properties (click to expand)</summary>\n\n|Name|Type|Allowed functions|\n|-|-|-|\n|`id`|`UUID`|`eq` `ne` `in` `notIn`|\n|`createdAt`|`TIMESTAMP`|`eq` `ne` `gt` `ge` `lt` `le`|\n|`name`|`STRING`|`eq` `ne` `in` `notIn` `like`|\n|`code`|`STRING`|`eq` `ne` `in` `notIn`|\n|`authorizedGuestLimit`|`NUMBER`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|\n|`authorizedGuestCount`|`NUMBER`|`eq` `ne` `gt` `ge` `lt` `le`|\n|`activatedAt`|`TIMESTAMP`|`eq` `ne` `gt` `ge` `lt` `le`|\n|`expiresAt`|`TIMESTAMP`|`eq` `ne` `gt` `ge` `lt` `le`|\n|`expired`|`BOOLEAN`|`eq` `ne`|\n|`timeLimitMinutes`|`NUMBER`|`eq` `ne` `gt` `ge` `lt` `le`|\n|`dataUsageLimitMBytes`|`NUMBER`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|\n|`rxRateLimitKbps`|`NUMBER`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|\n|`txRateLimitKbps`|`NUMBER`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|\n</details>",
+        "operationId": "getVouchers",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 100,
+              "maximum": 1000,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Hotspot voucher detail page"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Hotspot Vouchers"
+        ],
+        "summary": "Generate Vouchers",
+        "description": "Create one or more Hotspot vouchers.",
+        "operationId": "createVouchers",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Hotspot voucher creation request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationVoucherCreationResultDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Hotspot Vouchers"
+        ],
+        "summary": "Delete Vouchers",
+        "description": "Remove Hotspot vouchers based on the specified filter criteria.\n\n<details>\n<summary>Filterable properties (click to expand)</summary>\n\n|Name|Type|Allowed functions|\n|-|-|-|\n|`id`|`UUID`|`eq` `ne` `in` `notIn`|\n|`createdAt`|`TIMESTAMP`|`eq` `ne` `gt` `ge` `lt` `le`|\n|`name`|`STRING`|`eq` `ne` `in` `notIn` `like`|\n|`code`|`STRING`|`eq` `ne` `in` `notIn`|\n|`authorizedGuestLimit`|`NUMBER`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|\n|`authorizedGuestCount`|`NUMBER`|`eq` `ne` `gt` `ge` `lt` `le`|\n|`activatedAt`|`TIMESTAMP`|`eq` `ne` `gt` `ge` `lt` `le`|\n|`expiresAt`|`TIMESTAMP`|`eq` `ne` `gt` `ge` `lt` `le`|\n|`expired`|`BOOLEAN`|`eq` `ne`|\n|`timeLimitMinutes`|`NUMBER`|`eq` `ne` `gt` `ge` `lt` `le`|\n|`dataUsageLimitMBytes`|`NUMBER`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|\n|`rxRateLimitKbps`|`NUMBER`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|\n|`txRateLimitKbps`|`NUMBER`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|\n</details>",
+        "operationId": "deleteVouchers",
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Voucher deletion results"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/devices/{deviceId}/interfaces/ports/{portIdx}/actions": {
+      "post": {
+        "tags": [
+          "UniFi Devices"
+        ],
+        "summary": "Execute Port Action",
+        "description": "Perform an action on a specific device port. The request body must include the action name and any applicable input arguments.",
+        "operationId": "executePortAction",
+        "parameters": [
+          {
+            "name": "portIdx",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Port action request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/devices/{deviceId}/actions": {
+      "post": {
+        "tags": [
+          "UniFi Devices"
+        ],
+        "summary": "Execute Device Action",
+        "description": "Perform an action on an specific adopted device. The request body must include the action name and any applicable input arguments.",
+        "operationId": "executeDeviceAction",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Device action request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/clients/{clientId}/actions": {
+      "post": {
+        "tags": [
+          "Clients"
+        ],
+        "summary": "Execute Client Action",
+        "description": "Perform an action on a specific connected client. The request body must include the action name and any applicable input arguments.",
+        "operationId": "executeConnectedClientAction",
+        "parameters": [
+          {
+            "name": "clientId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Client action request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Client action response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites": {
+      "get": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "List Local Sites",
+        "description": "Retrieve a paginated list of local sites managed by this Network application.\nSite ID is required for other UniFi Network API calls.\n\n<details>\n<summary>Filterable properties (click to expand)</summary>\n\n|Name|Type|Allowed functions|\n|-|-|-|\n|`id`|`UUID`|`eq` `ne` `in` `notIn`|\n|`internalReference`|`STRING`|`eq` `ne` `in` `notIn`|\n|`name`|`STRING`|`eq` `ne` `in` `notIn`|\n</details>",
+        "operationId": "getSiteOverviewPage",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 25,
+              "maximum": 200,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Site overview page"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/hotspot/vouchers/{voucherId}": {
+      "get": {
+        "tags": [
+          "Hotspot Vouchers"
+        ],
+        "summary": "Get Voucher Details",
+        "description": "Retrieve details of a specific Hotspot voucher.",
+        "operationId": "getVoucher",
+        "parameters": [
+          {
+            "name": "voucherId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Hotspot voucher details"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Hotspot Vouchers"
+        ],
+        "summary": "Delete Voucher",
+        "description": "Remove a specific Hotspot voucher.",
+        "operationId": "deleteVoucher",
+        "parameters": [
+          {
+            "name": "voucherId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Voucher deletion results"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/devices": {
+      "get": {
+        "tags": [
+          "UniFi Devices"
+        ],
+        "summary": "List Devices",
+        "description": "Retrieve a paginated list of all adopted devices on a site, including basic device information.",
+        "operationId": "getDeviceOverviewPage",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 25,
+              "maximum": 200,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device overview page"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/devices/{deviceId}": {
+      "get": {
+        "tags": [
+          "UniFi Devices"
+        ],
+        "summary": "Get Device Details",
+        "description": "Retrieve detailed information about a specific adopted device, including firmware versioning, uplink state, details about device features and interfaces (ports, radios) and other key attributes.",
+        "operationId": "getDeviceDetails",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Device details"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/devices/{deviceId}/statistics/latest": {
+      "get": {
+        "tags": [
+          "UniFi Devices"
+        ],
+        "summary": "Get Latest Device Statistics",
+        "description": "Retrieve the latest real-time statistics of a specific adopted device, such as uptime, data transmission rates, CPU and memory utilization.",
+        "operationId": "getDeviceLatestStatistics",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Latest statistics for a device"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/clients": {
+      "get": {
+        "tags": [
+          "Clients"
+        ],
+        "summary": "List Connected Clients",
+        "description": "Retrieve a paginated list of all connected clients on a site, including physical devices (computers, smartphones) and active VPN connections.\n\n<details>\n<summary>Filterable properties (click to expand)</summary>\n\n|Name|Type|Allowed functions|\n|-|-|-|\n|`id`|`UUID`|`eq` `ne` `in` `notIn`|\n|`type`|`STRING`|`eq` `ne` `in` `notIn`|\n|`macAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|\n|`ipAddress`|`STRING`|`isNull` `isNotNull` `eq` `ne` `in` `notIn`|\n|`connectedAt`|`TIMESTAMP`|`isNull` `isNotNull` `eq` `ne` `gt` `ge` `lt` `le`|\n|`access.type`|`STRING`|`eq` `ne` `in` `notIn`|\n|`access.authorized`|`BOOLEAN`|`isNull` `isNotNull` `eq` `ne`|\n</details>",
+        "operationId": "getConnectedClientOverviewPage",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "default": 25,
+              "maximum": 200,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Client overview page"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sites/{siteId}/clients/{clientId}": {
+      "get": {
+        "tags": [
+          "Clients"
+        ],
+        "summary": "Get Connected Client Details",
+        "description": "Retrieve detailed information about a specific connected client, including name, IP address, MAC address, connection type and access information.",
+        "operationId": "getConnectedClientDetails",
+        "parameters": [
+          {
+            "name": "clientId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Client details"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/info": {
+      "get": {
+        "tags": [
+          "About application"
+        ],
+        "summary": "Get Application Info",
+        "description": "Retrieve general information about the UniFi Network application.",
+        "operationId": "getInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Application info"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error response": {
+        "description": "This generic error message format is used across all endpoints.",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "format": "int32",
+            "example": 400
+          },
+          "statusName": {
+            "type": "string",
+            "example": "UNAUTHORIZED"
+          },
+          "message": {
+            "type": "string",
+            "example": "Missing credentials"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-11-27T08:13:46.966Z"
+          },
+          "requestPath": {
+            "type": "string",
+            "example": "/integration/v1/sites/123"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "In case of Internal Server Error (core = 500), request ID can be used to track down the error in the server log",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          }
+        },
+        "x-tags": "Generic information"
+      },
+      "Hotspot voucher creation request": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "default": "1",
+            "description": "Number of vouchers to generate",
+            "maximum": 1000,
+            "minimum": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Voucher note, duplicated across all generated vouchers"
+          },
+          "authorizedGuestLimit": {
+            "type": "integer",
+            "format": "int64",
+            "description": "(Optional) limit for how many different guests can use the same voucher to authorize network access",
+            "example": 1,
+            "minimum": 1
+          },
+          "timeLimitMinutes": {
+            "type": "integer",
+            "format": "int64",
+            "description": "How long (in minutes) the voucher will provide access to the network since authorization of the first guest.\nSubsequently connected guests, if allowed, will share the same expiration time.",
+            "maximum": 1000000,
+            "minimum": 1
+          },
+          "dataUsageLimitMBytes": {
+            "type": "integer",
+            "format": "int64",
+            "description": "(Optional) data usage limit in megabytes",
+            "maximum": 1048576,
+            "minimum": 1
+          },
+          "rxRateLimitKbps": {
+            "type": "integer",
+            "format": "int64",
+            "description": "(Optional) download rate limit in kilobits per second",
+            "maximum": 100000,
+            "minimum": 2
+          },
+          "txRateLimitKbps": {
+            "type": "integer",
+            "format": "int64",
+            "description": "(Optional) upload rate limit in kilobits per second",
+            "maximum": 100000,
+            "minimum": 2
+          }
+        },
+        "required": [
+          "name",
+          "timeLimitMinutes"
+        ]
+      },
+      "Hotspot voucher details": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string",
+            "description": "Voucher note, may contain duplicate values across multiple vouchers",
+            "example": "hotel-guest"
+          },
+          "code": {
+            "type": "string",
+            "description": "Secret code to active the voucher using the Hotspot portal",
+            "example": 4861409510
+          },
+          "authorizedGuestLimit": {
+            "type": "integer",
+            "format": "int64",
+            "description": "(Optional) limit for how many different guests can use the same voucher to authorize network access",
+            "example": 1
+          },
+          "authorizedGuestCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "For how many guests the voucher has been used to authorize network access",
+            "example": 0
+          },
+          "activatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "(Optional) timestamp when the voucher has been activated (authorization time of the first guest)"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "(Optional) timestamp when the voucher will become expired. All guests using the voucher will be unauthorized from network access"
+          },
+          "expired": {
+            "type": "boolean",
+            "description": "Whether the voucher has been expired and can no longer be used to authorize network access"
+          },
+          "timeLimitMinutes": {
+            "type": "integer",
+            "format": "int64",
+            "description": "How long (in minutes) the voucher will provide access to the network since authorization of the first guest.\nSubsequently connected guests, if allowed, will share the same expiration time.",
+            "example": 1440
+          },
+          "dataUsageLimitMBytes": {
+            "type": "integer",
+            "format": "int64",
+            "description": "(Optional) data usage limit in megabytes",
+            "example": 1024
+          },
+          "rxRateLimitKbps": {
+            "type": "integer",
+            "format": "int64",
+            "description": "(Optional) download rate limit in kilobits per second",
+            "example": 1000
+          },
+          "txRateLimitKbps": {
+            "type": "integer",
+            "format": "int64",
+            "description": "(Optional) upload rate limit in kilobits per second",
+            "example": 1000
+          }
+        },
+        "required": [
+          "authorizedGuestCount",
+          "code",
+          "createdAt",
+          "expired",
+          "id",
+          "name",
+          "timeLimitMinutes"
+        ]
+      },
+      "IntegrationVoucherCreationResultDto": {
+        "properties": {
+          "vouchers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Hotspot voucher details"
+            }
+          }
+        }
+      },
+      "Port PoE power-cycle request": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Port action request"
+          }
+        ]
+      },
+      "Port action request": {
+        "discriminator": {
+          "propertyName": "action",
+          "mapping": {
+            "POWER_CYCLE": "#/components/schemas/Port PoE power-cycle request"
+          }
+        },
+        "properties": {
+          "action": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "Device action request": {
+        "discriminator": {
+          "propertyName": "action",
+          "mapping": {
+            "RESTART": "#/components/schemas/Device restart request"
+          }
+        },
+        "properties": {
+          "action": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "Device restart request": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Device action request"
+          }
+        ]
+      },
+      "Client action request": {
+        "discriminator": {
+          "propertyName": "action",
+          "mapping": {
+            "AUTHORIZE_GUEST_ACCESS": "#/components/schemas/Guest access authorization request",
+            "UNAUTHORIZE_GUEST_ACCESS": "#/components/schemas/Guest access unauthorization request"
+          }
+        },
+        "properties": {
+          "action": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "Guest access authorization request": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client action request"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "timeLimitMinutes": {
+                "type": "integer",
+                "format": "int64",
+                "description": "(Optional) how long (in minutes) the guest will be authorized to access the network.\nIf not specified, the default limit is used from the site settings",
+                "maximum": 1000000,
+                "minimum": 1
+              },
+              "dataUsageLimitMBytes": {
+                "type": "integer",
+                "format": "int64",
+                "description": "(Optional) data usage limit in megabytes",
+                "maximum": 1048576,
+                "minimum": 1
+              },
+              "rxRateLimitKbps": {
+                "type": "integer",
+                "format": "int64",
+                "description": "(Optional) download rate limit in kilobits per second",
+                "maximum": 100000,
+                "minimum": 2
+              },
+              "txRateLimitKbps": {
+                "type": "integer",
+                "format": "int64",
+                "description": "(Optional) upload rate limit in kilobits per second",
+                "maximum": 100000,
+                "minimum": 2
+              }
+            }
+          }
+        ],
+        "description": "Authorizes network access to a guest client. Client must be a guest.\nThis action cancels existing active authorization (if exists), creates a new one with new limits\nand resets guest traffic counters."
+      },
+      "Guest access unauthorization request": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client action request"
+          }
+        ],
+        "description": "Unauthorizes network access and disconnects a guest client."
+      },
+      "Client action response": {
+        "discriminator": {
+          "propertyName": "action",
+          "mapping": {
+            "AUTHORIZE_GUEST_ACCESS": "#/components/schemas/Guest access authorization response",
+            "UNAUTHORIZE_GUEST_ACCESS": "#/components/schemas/Guest access unauthorization response"
+          }
+        },
+        "properties": {
+          "action": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "Guest access authorization response": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client action response"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "revokedAuthorization": {
+                "$ref": "#/components/schemas/Guest authorization details",
+                "description": "(Optional) Revoked authorization in case the guest was already authorized at the time of this request"
+              },
+              "grantedAuthorization": {
+                "$ref": "#/components/schemas/Guest authorization details",
+                "description": "Granted guest authorization"
+              }
+            }
+          }
+        ],
+        "required": [
+          "grantedAuthorization"
+        ]
+      },
+      "Guest access unauthorization response": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client action response"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "revokedAuthorization": {
+                "$ref": "#/components/schemas/Guest authorization details",
+                "description": "Revoked guest authorization"
+              }
+            }
+          }
+        ],
+        "required": [
+          "revokedAuthorization"
+        ]
+      },
+      "Guest authorization details": {
+        "properties": {
+          "authorizedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the guest has been authorized"
+          },
+          "authorizationMethod": {
+            "type": "string",
+            "description": "Guest authorization method (API, Voucher etc)",
+            "enum": [
+              "VOUCHER",
+              "API",
+              "OTHER"
+            ]
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the guest will get automatically unauthorized"
+          },
+          "dataUsageLimitMBytes": {
+            "type": "integer",
+            "format": "int64",
+            "description": "(Optional) data usage limit in megabytes",
+            "example": 1024
+          },
+          "rxRateLimitKbps": {
+            "type": "integer",
+            "format": "int64",
+            "description": "(Optional) download rate limit in kilobits per second",
+            "example": 1000
+          },
+          "txRateLimitKbps": {
+            "type": "integer",
+            "format": "int64",
+            "description": "(Optional) upload rate limit in kilobits per second",
+            "example": 1000
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Guest authorization usage details"
+          }
+        },
+        "required": [
+          "authorizationMethod",
+          "authorizedAt",
+          "expiresAt"
+        ]
+      },
+      "Guest authorization usage details": {
+        "properties": {
+          "durationSec": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "rxBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "txBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "bytes": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "bytes",
+          "durationSec",
+          "rxBytes",
+          "txBytes"
+        ]
+      },
+      "Site overview": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "internalReference": {
+            "type": "string",
+            "description": "Internal unique name of the site used in older APIs"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "internalReference",
+          "name"
+        ]
+      },
+      "Site overview page": {
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64",
+            "example": 0
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "example": 25
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "example": 10
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1000
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Site overview"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data",
+          "limit",
+          "offset",
+          "totalCount"
+        ]
+      },
+      "Hotspot voucher detail page": {
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64",
+            "example": 0
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "example": 25
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "example": 10
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1000
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Hotspot voucher details"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data",
+          "limit",
+          "offset",
+          "totalCount"
+        ]
+      },
+      "Device overview": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "IW HD"
+          },
+          "model": {
+            "type": "string",
+            "example": "UHDIW"
+          },
+          "macAddress": {
+            "type": "string",
+            "example": "94:2a:6f:26:c6:ca"
+          },
+          "ipAddress": {
+            "type": "string",
+            "example": "192.168.1.55"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ONLINE",
+              "OFFLINE",
+              "PENDING_ADOPTION",
+              "UPDATING",
+              "GETTING_READY",
+              "ADOPTING",
+              "DELETING",
+              "CONNECTION_INTERRUPTED",
+              "ISOLATED"
+            ]
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "switching",
+                "accessPoint",
+                "gateway"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "interfaces": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ports",
+                "radios"
+              ]
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "features",
+          "id",
+          "interfaces",
+          "ipAddress",
+          "macAddress",
+          "model",
+          "name",
+          "state"
+        ]
+      },
+      "Device overview page": {
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64",
+            "example": 0
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "example": 25
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "example": 10
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1000
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Device overview"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data",
+          "limit",
+          "offset",
+          "totalCount"
+        ]
+      },
+      "Access point feature overview": {},
+      "Device details": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "IW HD"
+          },
+          "model": {
+            "type": "string",
+            "example": "UHDIW"
+          },
+          "supported": {
+            "type": "boolean"
+          },
+          "macAddress": {
+            "type": "string",
+            "example": "94:2a:6f:26:c6:ca"
+          },
+          "ipAddress": {
+            "type": "string",
+            "example": "192.168.1.55"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ONLINE",
+              "OFFLINE",
+              "PENDING_ADOPTION",
+              "UPDATING",
+              "GETTING_READY",
+              "ADOPTING",
+              "DELETING",
+              "CONNECTION_INTERRUPTED",
+              "ISOLATED"
+            ]
+          },
+          "firmwareVersion": {
+            "type": "string",
+            "example": "6.6.55"
+          },
+          "firmwareUpdatable": {
+            "type": "boolean"
+          },
+          "adoptedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provisionedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "configurationId": {
+            "type": "string",
+            "example": "7596498d2f367dc2"
+          },
+          "uplink": {
+            "$ref": "#/components/schemas/Device uplink interface overview"
+          },
+          "features": {
+            "$ref": "#/components/schemas/Device features"
+          },
+          "interfaces": {
+            "$ref": "#/components/schemas/Device physical interfaces"
+          }
+        },
+        "required": [
+          "configurationId",
+          "features",
+          "firmwareUpdatable",
+          "id",
+          "interfaces",
+          "ipAddress",
+          "macAddress",
+          "model",
+          "name",
+          "state",
+          "supported"
+        ]
+      },
+      "Device features": {
+        "properties": {
+          "switching": {
+            "$ref": "#/components/schemas/Switch feature overview",
+            "example": {}
+          },
+          "accessPoint": {
+            "$ref": "#/components/schemas/Access point feature overview",
+            "example": {}
+          }
+        }
+      },
+      "Device physical interfaces": {
+        "properties": {
+          "ports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Port overview"
+            }
+          },
+          "radios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Wireless radio overview"
+            }
+          }
+        }
+      },
+      "Device uplink interface overview": {
+        "description": "Uplink interface is device's connection to the parent device in the network topology",
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "deviceId"
+        ]
+      },
+      "Port PoE overview": {
+        "properties": {
+          "standard": {
+            "type": "string",
+            "enum": [
+              "802.3af",
+              "802.3at",
+              "802.3bt"
+            ],
+            "example": "802.3bt"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "enum": [
+              "1",
+              "2",
+              "3",
+              "4"
+            ],
+            "example": 3
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether the PoE feature is enabled on the port"
+          },
+          "state": {
+            "type": "string",
+            "description": "Whether the port currently supplies power to the (connected) device.",
+            "enum": [
+              "UP",
+              "DOWN",
+              "LIMITED",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "required": [
+          "enabled",
+          "standard",
+          "state",
+          "type"
+        ]
+      },
+      "Port overview": {
+        "properties": {
+          "idx": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1,
+            "minimum": 1
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "UP",
+              "DOWN",
+              "UNKNOWN"
+            ]
+          },
+          "connector": {
+            "type": "string",
+            "enum": [
+              "RJ45",
+              "SFP",
+              "SFPPLUS",
+              "SFP28",
+              "QSFP28"
+            ]
+          },
+          "maxSpeedMbps": {
+            "type": "integer",
+            "format": "int32",
+            "example": 10000
+          },
+          "speedMbps": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1000
+          },
+          "poe": {
+            "$ref": "#/components/schemas/Port PoE overview"
+          }
+        },
+        "required": [
+          "connector",
+          "idx",
+          "maxSpeedMbps",
+          "state"
+        ]
+      },
+      "Switch feature overview": {},
+      "Wireless radio overview": {
+        "properties": {
+          "wlanStandard": {
+            "type": "string",
+            "enum": [
+              "802.11a",
+              "802.11b",
+              "802.11g",
+              "802.11n",
+              "802.11ac",
+              "802.11ax",
+              "802.11be"
+            ]
+          },
+          "frequencyGHz": {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5",
+              "6",
+              "60"
+            ]
+          },
+          "channelWidthMHz": {
+            "type": "integer",
+            "format": "int32",
+            "example": 40
+          },
+          "channel": {
+            "type": "integer",
+            "format": "int32",
+            "example": 36
+          }
+        },
+        "required": [
+          "channelWidthMHz",
+          "frequencyGHz",
+          "wlanStandard"
+        ]
+      },
+      "Latest statistics for a device": {
+        "properties": {
+          "uptimeSec": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "lastHeartbeatAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "nextHeartbeatAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "loadAverage1Min": {
+            "type": "number",
+            "format": "double"
+          },
+          "loadAverage5Min": {
+            "type": "number",
+            "format": "double"
+          },
+          "loadAverage15Min": {
+            "type": "number",
+            "format": "double"
+          },
+          "cpuUtilizationPct": {
+            "type": "number",
+            "format": "double"
+          },
+          "memoryUtilizationPct": {
+            "type": "number",
+            "format": "double"
+          },
+          "uplink": {
+            "$ref": "#/components/schemas/Latest statistics for a device uplink interface"
+          },
+          "interfaces": {
+            "$ref": "#/components/schemas/Latest statistics for device interfaces"
+          }
+        },
+        "required": [
+          "interfaces"
+        ]
+      },
+      "Latest statistics for a device uplink interface": {
+        "properties": {
+          "txRateBps": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "rxRateBps": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "Latest statistics for device interfaces": {
+        "properties": {
+          "radios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Latest statistics for wireless radio"
+            }
+          }
+        }
+      },
+      "Latest statistics for wireless radio": {
+        "properties": {
+          "frequencyGHz": {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5",
+              "6",
+              "60"
+            ]
+          },
+          "txRetriesPct": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "frequencyGHz"
+        ]
+      },
+      "Client access overview": {
+        "example": {
+          "type": "DEFAULT"
+        }
+      },
+      "Client overview": {
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "WIRED": "#/components/schemas/Wired client overview",
+            "WIRELESS": "#/components/schemas/Wireless client overview",
+            "VPN": "#/components/schemas/VPN client (connection) overview",
+            "TELEPORT": "#/components/schemas/Teleport client (connection) overview"
+          }
+        },
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "connectedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ipAddress": {
+            "type": "string"
+          },
+          "access": {
+            "$ref": "#/components/schemas/Client access overview"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "access",
+          "id",
+          "name",
+          "type"
+        ]
+      },
+      "Client overview page": {
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64",
+            "example": 0
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "example": 25
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "example": 10
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1000
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Client overview"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data",
+          "limit",
+          "offset",
+          "totalCount"
+        ]
+      },
+      "Default client access overview": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Local client access overview"
+          },
+          {
+            "$ref": "#/components/schemas/VPN client access overview"
+          },
+          {
+            "$ref": "#/components/schemas/Teleport client access overview"
+          }
+        ]
+      },
+      "Guest access overview": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Local client access overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "authorized": {
+                "type": "boolean"
+              }
+            }
+          }
+        ],
+        "required": [
+          "authorized"
+        ]
+      },
+      "Local client access overview": {
+        "description": "Represents the type of network access and/or any applicable authorization status the client is using.\n\n- **Wired clients** may have direct access without additional authorization.\n- **Wireless clients** can be connected via a protected network or an open network\n  that may require additional authorization (e.g., a guest portal).\n- **VPN clients** may have different authorization mechanisms.\n\nCurrently, the only two supported access types are `GUEST` (used for wired and wireless guest clients)\nand `DEFAULT` (a placeholder, which might be refined in the future releases, used for all other clients).\n\nFiltering is possible by `access.type`, for example `access.type.eq('GUEST')` to list guest clients.",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "DEFAULT": "#/components/schemas/Default client access overview",
+            "GUEST": "#/components/schemas/Guest access overview"
+          }
+        },
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "Teleport client (connection) overview": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "access": {
+                "$ref": "#/components/schemas/Teleport client access overview"
+              }
+            }
+          }
+        ],
+        "required": [
+          "access",
+          "id",
+          "name"
+        ]
+      },
+      "Teleport client access overview": {
+        "description": "Represents the type of network access and/or any applicable authorization status the client is using.\n\n- **Wired clients** may have direct access without additional authorization.\n- **Wireless clients** can be connected via a protected network or an open network\n  that may require additional authorization (e.g., a guest portal).\n- **VPN clients** may have different authorization mechanisms.\n\nCurrently, the only two supported access types are `GUEST` (used for wired and wireless guest clients)\nand `DEFAULT` (a placeholder, which might be refined in the future releases, used for all other clients).\n\nFiltering is possible by `access.type`, for example `access.type.eq('GUEST')` to list guest clients.",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "DEFAULT": "#/components/schemas/Default client access overview"
+          }
+        },
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "VPN client (connection) overview": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "access": {
+                "$ref": "#/components/schemas/VPN client access overview"
+              }
+            }
+          }
+        ],
+        "required": [
+          "access",
+          "id",
+          "name"
+        ]
+      },
+      "VPN client access overview": {
+        "description": "Represents the type of network access and/or any applicable authorization status the client is using.\n\n- **Wired clients** may have direct access without additional authorization.\n- **Wireless clients** can be connected via a protected network or an open network\n  that may require additional authorization (e.g., a guest portal).\n- **VPN clients** may have different authorization mechanisms.\n\nCurrently, the only two supported access types are `GUEST` (used for wired and wireless guest clients)\nand `DEFAULT` (a placeholder, which might be refined in the future releases, used for all other clients).\n\nFiltering is possible by `access.type`, for example `access.type.eq('GUEST')` to list guest clients.",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "DEFAULT": "#/components/schemas/Default client access overview"
+          }
+        },
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "Wired client overview": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "macAddress": {
+                "type": "string"
+              },
+              "uplinkDeviceId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "access": {
+                "$ref": "#/components/schemas/Local client access overview"
+              }
+            }
+          }
+        ],
+        "required": [
+          "access",
+          "id",
+          "macAddress",
+          "name",
+          "uplinkDeviceId"
+        ]
+      },
+      "Wireless client overview": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "macAddress": {
+                "type": "string"
+              },
+              "uplinkDeviceId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "access": {
+                "$ref": "#/components/schemas/Local client access overview"
+              }
+            }
+          }
+        ],
+        "required": [
+          "access",
+          "id",
+          "macAddress",
+          "name",
+          "uplinkDeviceId"
+        ]
+      },
+      "Client details": {
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "WIRED": "#/components/schemas/Wired client details",
+            "WIRELESS": "#/components/schemas/Wireless client details",
+            "VPN": "#/components/schemas/VPN client (connection) details",
+            "TELEPORT": "#/components/schemas/Teleport client (connection) details"
+          }
+        },
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "connectedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ipAddress": {
+            "type": "string"
+          },
+          "access": {},
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "access",
+          "id",
+          "name",
+          "type"
+        ]
+      },
+      "Default client access details": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Local client access details"
+          },
+          {
+            "$ref": "#/components/schemas/VPN client access details"
+          },
+          {
+            "$ref": "#/components/schemas/Teleport client access details"
+          }
+        ]
+      },
+      "Guest access details": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Local client access details"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "authorized": {
+                "type": "boolean"
+              },
+              "authorization": {
+                "$ref": "#/components/schemas/Guest authorization details"
+              }
+            }
+          }
+        ],
+        "required": [
+          "authorized"
+        ]
+      },
+      "Local client access details": {
+        "description": "Represents the type of network access and/or any applicable authorization status the client is using.\n\n- **Wired clients** may have direct access without additional authorization.\n- **Wireless clients** can be connected via a protected network or an open network\n  that may require additional authorization (e.g., a guest portal).\n- **VPN clients** may have different authorization mechanisms.\n\nCurrently, the only two supported access types are `GUEST` (used for wired and wireless guest clients)\nand `DEFAULT` (a placeholder, which might be refined in the future releases, used for all other clients).\n\nFiltering is possible by `access.type`, for example `access.type.eq('GUEST')` to list guest clients.",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "DEFAULT": "#/components/schemas/Default client access details",
+            "GUEST": "#/components/schemas/Guest access details"
+          }
+        },
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "Teleport client (connection) details": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "connectedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ipAddress": {
+            "type": "string"
+          },
+          "access": {
+            "$ref": "#/components/schemas/Teleport client access details"
+          }
+        },
+        "required": [
+          "access",
+          "id",
+          "name"
+        ]
+      },
+      "Teleport client access details": {
+        "description": "Represents the type of network access and/or any applicable authorization status the client is using.\n\n- **Wired clients** may have direct access without additional authorization.\n- **Wireless clients** can be connected via a protected network or an open network\n  that may require additional authorization (e.g., a guest portal).\n- **VPN clients** may have different authorization mechanisms.\n\nCurrently, the only two supported access types are `GUEST` (used for wired and wireless guest clients)\nand `DEFAULT` (a placeholder, which might be refined in the future releases, used for all other clients).\n\nFiltering is possible by `access.type`, for example `access.type.eq('GUEST')` to list guest clients.",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "DEFAULT": "#/components/schemas/Default client access details"
+          }
+        },
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "VPN client (connection) details": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client details"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "access": {
+                "$ref": "#/components/schemas/VPN client access details"
+              }
+            }
+          }
+        ],
+        "required": [
+          "access",
+          "id",
+          "name"
+        ]
+      },
+      "VPN client access details": {
+        "description": "Represents the type of network access and/or any applicable authorization status the client is using.\n\n- **Wired clients** may have direct access without additional authorization.\n- **Wireless clients** can be connected via a protected network or an open network\n  that may require additional authorization (e.g., a guest portal).\n- **VPN clients** may have different authorization mechanisms.\n\nCurrently, the only two supported access types are `GUEST` (used for wired and wireless guest clients)\nand `DEFAULT` (a placeholder, which might be refined in the future releases, used for all other clients).\n\nFiltering is possible by `access.type`, for example `access.type.eq('GUEST')` to list guest clients.",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "DEFAULT": "#/components/schemas/Default client access details"
+          }
+        },
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "Wired client details": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client details"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "macAddress": {
+                "type": "string"
+              },
+              "uplinkDeviceId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "access": {
+                "$ref": "#/components/schemas/Local client access details"
+              }
+            }
+          }
+        ],
+        "required": [
+          "access",
+          "id",
+          "macAddress",
+          "name",
+          "uplinkDeviceId"
+        ]
+      },
+      "Wireless client details": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Client details"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "macAddress": {
+                "type": "string"
+              },
+              "uplinkDeviceId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "access": {
+                "$ref": "#/components/schemas/Local client access details"
+              }
+            }
+          }
+        ],
+        "required": [
+          "access",
+          "id",
+          "macAddress",
+          "name",
+          "uplinkDeviceId"
+        ]
+      },
+      "Application info": {
+        "properties": {
+          "applicationVersion": {
+            "type": "string",
+            "example": "9.1.0"
+          }
+        },
+        "required": [
+          "applicationVersion"
+        ]
+      },
+      "Voucher deletion results": {
+        "properties": {
+          "vouchersDeleted": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+    }
+  }
+}
