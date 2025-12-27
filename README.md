@@ -66,4 +66,4 @@ openapi-python-client generate --path unifi-protect/6.2.72.json --output-path un
 
 ## Last Updated
 
-2025-12-27 10:46:21 UTC
+2025-12-27 11:00:42 UTC
