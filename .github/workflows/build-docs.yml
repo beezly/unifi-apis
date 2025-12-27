@@ -42,6 +42,8 @@ jobs:
 
     - name: Build documentation
       run: python3 build_docs.py
+      env:
+        GOATCOUNTER_SITE: ${{ secrets.GOATCOUNTER_SITE }}
 
     - name: Commit README if changed
       run: |

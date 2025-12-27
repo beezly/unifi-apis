@@ -11,6 +11,9 @@ from pathlib import Path
 from datetime import date
 from packaging import version
 
+# Optional: GoatCounter analytics (set GOATCOUNTER_SITE env var)
+GOATCOUNTER_SITE = os.environ.get('GOATCOUNTER_SITE')
+
 
 def get_spec_files(directory):
     """Get all JSON spec files from a directory, sorted in reverse version order."""
@@ -490,6 +493,7 @@ def generate_index_html(network_specs, protect_specs, output_path):
             list.classList.toggle('open');
         }}
     </script>
+{f'    <script data-goatcounter="https://{GOATCOUNTER_SITE}.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>' if GOATCOUNTER_SITE else ''}
 </body>
 </html>
 """
