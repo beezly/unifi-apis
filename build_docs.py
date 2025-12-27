@@ -55,33 +55,47 @@ def generate_index_html(network_specs, protect_specs, output_path):
     def spec_to_version(spec_file):
         return spec_file.stem
 
-    network_items = ""
-    for spec in network_specs:
-        version = spec_to_version(spec)
-        network_items += f"""                <div class="version-card">
-                    <div class="version-info">
-                        <div class="version-number">Version {version}</div>
-                    </div>
-                    <div class="links">
-                        <a href="network-{version}.html" class="btn btn-primary">View Documentation</a>
-                        <a href="network-{version}.json" class="btn btn-secondary">Download Spec</a>
-                    </div>
-                </div>
+    def generate_version_rows(specs, api_type):
+        """Generate version row HTML for older versions (skip first/latest)."""
+        rows = ""
+        for spec in specs[1:]:  # Skip the latest version
+            ver = spec_to_version(spec)
+            rows += f"""                        <div class="version-row">
+                            <span class="version-num">{ver}</span>
+                            <div class="version-links">
+                                <a href="{api_type}-{ver}.html" class="btn btn-secondary btn-xs">Docs</a>
+                                <a href="{api_type}-{ver}.json" class="btn btn-secondary btn-xs">JSON</a>
+                            </div>
+                        </div>
 """
+        return rows
 
-    protect_items = ""
-    for spec in protect_specs:
-        version = spec_to_version(spec)
-        protect_items += f"""                <div class="version-card">
-                    <div class="version-info">
-                        <div class="version-number">Version {version}</div>
-                    </div>
-                    <div class="links">
-                        <a href="protect-{version}.html" class="btn btn-primary">View Documentation</a>
-                        <a href="protect-{version}.json" class="btn btn-secondary">Download Spec</a>
-                    </div>
-                </div>
-"""
+    # Get latest versions
+    network_latest = spec_to_version(network_specs[0]) if network_specs else None
+    protect_latest = spec_to_version(protect_specs[0]) if protect_specs else None
+
+    # Generate older version rows
+    network_older = generate_version_rows(network_specs, "network")
+    protect_older = generate_version_rows(protect_specs, "protect")
+
+    # Older versions toggle (only if there are older versions)
+    network_toggle = ""
+    if len(network_specs) > 1:
+        network_toggle = f"""                    <button class="versions-toggle" onclick="toggleVersions(this)">
+                        <span>Older versions</span>
+                        <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                    </button>
+                    <div class="versions-list">
+{network_older}                    </div>"""
+
+    protect_toggle = ""
+    if len(protect_specs) > 1:
+        protect_toggle = f"""                    <button class="versions-toggle" onclick="toggleVersions(this)">
+                        <span>Older versions</span>
+                        <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                    </button>
+                    <div class="versions-list">
+{protect_older}                    </div>"""
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -100,163 +114,285 @@ def generate_index_html(network_specs, protect_specs, output_path):
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a2e;
             min-height: 100vh;
             padding: 2rem;
         }}
 
         .container {{
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 3rem;
         }}
 
         header {{
             text-align: center;
-            margin-bottom: 3rem;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 2rem;
+            color: white;
         }}
 
         h1 {{
-            font-size: 2.5rem;
-            color: #2c3e50;
+            font-size: 2.2rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
         }}
 
         .subtitle {{
-            color: #7f8c8d;
-            font-size: 1.1rem;
+            color: rgba(255,255,255,0.7);
+            font-size: 1rem;
         }}
 
         .disclaimer {{
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 1rem;
-            margin: 2rem 0;
-            border-radius: 4px;
-        }}
-
-        .disclaimer strong {{
-            color: #856404;
-        }}
-
-        .api-section {{
-            margin: 2rem 0;
-        }}
-
-        .api-section h2 {{
-            color: #34495e;
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-        }}
-
-        .api-section h2::before {{
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 1.5rem;
-            background: #667eea;
-            margin-right: 0.75rem;
-            border-radius: 2px;
-        }}
-
-        .version-list {{
-            display: grid;
-            gap: 1rem;
-            margin-top: 1rem;
-        }}
-
-        .version-card {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.25rem;
-            background: #f8f9fa;
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+            padding: 0.75rem 1rem;
+            margin-bottom: 2rem;
             border-radius: 8px;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+            font-size: 0.9rem;
+            text-align: center;
         }}
 
-        .version-card:hover {{
-            background: #e9ecef;
-            border-color: #667eea;
-            transform: translateX(4px);
+        .api-grid {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }}
 
-        .version-info {{
+        @media (max-width: 800px) {{
+            .api-grid {{
+                grid-template-columns: 1fr;
+            }}
+        }}
+
+        .api-card {{
+            background: #16213e;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }}
+
+        .api-card:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }}
+
+        .card-header {{
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }}
+
+        .card-header.network {{
+            background: linear-gradient(135deg, #0f4c75 0%, #1a237e 100%);
+        }}
+
+        .card-header.protect {{
+            background: linear-gradient(135deg, #5c2a7e 0%, #7b1fa2 100%);
+        }}
+
+        .card-icon {{
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+
+        .card-icon svg {{
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }}
+
+        .card-title {{
             flex: 1;
         }}
 
-        .version-number {{
+        .card-title h2 {{
+            color: white;
             font-size: 1.3rem;
             font-weight: 600;
-            color: #2c3e50;
+            margin-bottom: 0.15rem;
         }}
 
-        .links {{
+        .card-title .version-count {{
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+        }}
+
+        .card-body {{
+            padding: 1.5rem;
+        }}
+
+        .latest-section {{
+            margin-bottom: 1rem;
+        }}
+
+        .latest-label {{
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }}
+
+        .latest-row {{
             display: flex;
+            align-items: center;
+            justify-content: space-between;
             gap: 1rem;
         }}
 
+        .latest-version {{
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }}
+
+        .btn-group {{
+            display: flex;
+            gap: 0.5rem;
+        }}
+
         .btn {{
-            padding: 0.6rem 1.5rem;
+            padding: 0.5rem 1rem;
             border-radius: 6px;
             text-decoration: none;
             font-weight: 500;
-            transition: all 0.3s ease;
-            display: inline-block;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            border: none;
+            cursor: pointer;
+        }}
+
+        .btn svg {{
+            width: 14px;
+            height: 14px;
         }}
 
         .btn-primary {{
-            background: #667eea;
+            background: #3b82f6;
             color: white;
         }}
 
         .btn-primary:hover {{
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background: #2563eb;
         }}
 
         .btn-secondary {{
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            background: rgba(255,255,255,0.1);
+            color: #ccc;
         }}
 
         .btn-secondary:hover {{
-            background: #667eea;
+            background: rgba(255,255,255,0.15);
             color: white;
         }}
 
+        .versions-toggle {{
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #999;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }}
+
+        .versions-toggle:hover {{
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.2);
+            color: #ccc;
+        }}
+
+        .versions-toggle svg {{
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            transition: transform 0.2s ease;
+        }}
+
+        .versions-toggle.open svg {{
+            transform: rotate(180deg);
+        }}
+
+        .versions-list {{
+            display: none;
+            margin-top: 0.75rem;
+        }}
+
+        .versions-list.open {{
+            display: block;
+        }}
+
+        .version-row {{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.75rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+            margin-bottom: 0.4rem;
+            transition: background 0.2s ease;
+        }}
+
+        .version-row:hover {{
+            background: rgba(255,255,255,0.08);
+        }}
+
+        .version-row:last-child {{
+            margin-bottom: 0;
+        }}
+
+        .version-num {{
+            color: #ddd;
+            font-weight: 500;
+            font-size: 0.9rem;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }}
+
+        .version-links {{
+            display: flex;
+            gap: 0.5rem;
+        }}
+
+        .btn-xs {{
+            padding: 0.3rem 0.6rem;
+            font-size: 0.75rem;
+        }}
+
         footer {{
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 2px solid #e0e0e0;
             text-align: center;
-            color: #7f8c8d;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.85rem;
+            padding-top: 1rem;
         }}
 
         footer a {{
-            color: #667eea;
+            color: rgba(255,255,255,0.6);
             text-decoration: none;
         }}
 
         footer a:hover {{
+            color: white;
             text-decoration: underline;
         }}
 
-        .empty-state {{
-            text-align: center;
-            padding: 2rem;
-            color: #7f8c8d;
-            font-style: italic;
+        footer p {{
+            margin-bottom: 0.3rem;
         }}
     </style>
 </head>
@@ -268,29 +404,92 @@ def generate_index_html(network_specs, protect_specs, output_path):
         </header>
 
         <div class="disclaimer">
-            <strong>⚠️ Disclaimer:</strong> This repository is not supported by Ubiquiti Inc. These OpenAPI specifications are extracted directly from the UniFi applications and are community-maintained.
+            <strong>Disclaimer:</strong> Not supported by Ubiquiti Inc. Community-maintained specifications extracted from UniFi applications.
         </div>
 
-        <section class="api-section">
-            <h2>UniFi Network API</h2>
-            <div class="version-list">
-{network_items if network_items else '                <div class="empty-state">No versions available yet</div>'}
+        <div class="api-grid">
+            <!-- Network API Card -->
+            <div class="api-card">
+                <div class="card-header network">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                        </svg>
+                    </div>
+                    <div class="card-title">
+                        <h2>Network API</h2>
+                        <span class="version-count">{len(network_specs)} version{"s" if len(network_specs) != 1 else ""} available</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="latest-section">
+                        <div class="latest-label">Latest Version</div>
+                        <div class="latest-row">
+                            <span class="latest-version">{network_latest or "N/A"}</span>
+                            <div class="btn-group">
+                                <a href="network-{network_latest}.html" class="btn btn-primary">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>
+                                    Docs
+                                </a>
+                                <a href="network-{network_latest}.json" class="btn btn-secondary">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                                    JSON
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+{network_toggle}
+                </div>
             </div>
-        </section>
 
-        <section class="api-section">
-            <h2>UniFi Protect API</h2>
-            <div class="version-list">
-{protect_items if protect_items else '                <div class="empty-state">No versions available yet</div>'}
+            <!-- Protect API Card -->
+            <div class="api-card">
+                <div class="card-header protect">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                        </svg>
+                    </div>
+                    <div class="card-title">
+                        <h2>Protect API</h2>
+                        <span class="version-count">{len(protect_specs)} version{"s" if len(protect_specs) != 1 else ""} available</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="latest-section">
+                        <div class="latest-label">Latest Version</div>
+                        <div class="latest-row">
+                            <span class="latest-version">{protect_latest or "N/A"}</span>
+                            <div class="btn-group">
+                                <a href="protect-{protect_latest}.html" class="btn btn-primary">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>
+                                    Docs
+                                </a>
+                                <a href="protect-{protect_latest}.json" class="btn btn-secondary">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                                    JSON
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+{protect_toggle}
+                </div>
             </div>
-        </section>
+        </div>
 
         <footer>
-            <p>Last Updated: {date.today().strftime('%Y-%m-%d')}</p>
             <p>Generated automatically from OpenAPI specifications</p>
             <p><a href="https://github.com/beezly/unifi-apis">View on GitHub</a></p>
         </footer>
     </div>
+
+    <script>
+        function toggleVersions(button) {{
+            button.classList.toggle('open');
+            const list = button.nextElementSibling;
+            list.classList.toggle('open');
+        }}
+    </script>
 </body>
 </html>
 """
