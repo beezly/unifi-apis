@@ -63,7 +63,3 @@ openapi-python-client generate --path unifi-protect/6.2.72.json --output-path un
 - Specifications are in OpenAPI 3.1.0 format
 - Each version is stored as a separate file for easy comparison and version management
 - Updates are published automatically when new versions are detected
-
-## Last Updated
-
-2025-12-27 11:14:23 UTC

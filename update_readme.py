@@ -4,7 +4,6 @@ Update README.md with current API versions in reverse order (most recent first).
 """
 
 from pathlib import Path
-from datetime import datetime
 from packaging import version
 
 
@@ -88,10 +87,6 @@ openapi-python-client generate --path unifi-protect/{protect_specs[0].name if pr
 - Specifications are in OpenAPI 3.1.0 format
 - Each version is stored as a separate file for easy comparison and version management
 - Updates are published automatically when new versions are detected
-
-## Last Updated
-
-{datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
 """
 
     # Write the updated README
