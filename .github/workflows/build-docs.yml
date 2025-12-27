@@ -8,11 +8,12 @@ on:
       - 'unifi-network/**/*.json'
       - 'unifi-protect/**/*.json'
       - 'build_docs.py'
+      - 'update_readme.py'
       - '.github/workflows/build-docs.yml'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -33,8 +34,27 @@ jobs:
       with:
         python-version: '3.x'
 
+    - name: Install packaging module
+      run: pip install packaging
+
+    - name: Update README
+      run: python3 update_readme.py
+
     - name: Build documentation
       run: python3 build_docs.py
+
+    - name: Commit README if changed
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add README.md
+        git diff --quiet && git diff --staged --quiet || git commit -m "Update documentation [skip ci]"
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
 
     - name: Upload Pages artifact
       uses: actions/upload-pages-artifact@v3

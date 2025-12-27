@@ -9,14 +9,18 @@ import json
 import shutil
 from pathlib import Path
 from datetime import date
+from packaging import version
 
 
 def get_spec_files(directory):
-    """Get all JSON spec files from a directory."""
+    """Get all JSON spec files from a directory, sorted in reverse version order."""
     path = Path(directory)
     if not path.exists():
         return []
-    return sorted([f for f in path.glob("*.json")], reverse=True)
+
+    # Sort by semantic version in reverse order (most recent first)
+    files = list(path.glob("*.json"))
+    return sorted(files, key=lambda f: version.parse(f.stem), reverse=True)
 
 
 def generate_redoc_html(spec_filename, output_path, title):
