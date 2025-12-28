@@ -8,14 +8,14 @@ This repository contains OpenAPI 3.1.0 specifications for UniFi Network and Prot
 
 8 version(s) available:
 
+- [10.1.68](unifi-network/10.1.68.json)
+- [10.0.162](unifi-network/10.0.162.json)
 - [9.5.21](unifi-network/9.5.21.json)
 - [9.4.19](unifi-network/9.4.19.json)
 - [9.3.45](unifi-network/9.3.45.json)
 - [9.2.87](unifi-network/9.2.87.json)
 - [9.1.120](unifi-network/9.1.120.json)
 - [9.0.99](unifi-network/9.0.99.json)
-- [10.1.68](unifi-network/10.1.68.json)
-- [10.0.162](unifi-network/10.0.162.json)
 
 
 ### UniFi Protect API
@@ -64,7 +64,3 @@ openapi-python-client generate --path unifi-protect/6.2.72.json --output-path un
 - Specifications are in OpenAPI 3.1.0 format
 - Each version is stored as a separate file for easy comparison and version management
 - Updates are published automatically when new versions are detected
-
-## Last Updated
-
-{datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
