@@ -60,10 +60,6 @@ openapi-python-client generate --path unifi-network/10.1.68.json --output-path u
 openapi-python-client generate --path unifi-protect/6.2.72.json --output-path unifi-protect-client
 ```
 
-## Missing a Version?
-
-If you need an API version that isn't listed, [request it here](https://github.com/beezly/unifi-apis/issues/new?template=api-version-request.yml).
-
 ## Notes
 
 - These specifications are automatically extracted from UniFi controllers
