@@ -149,10 +149,30 @@ def generate_index_html(network_specs, protect_specs, output_path):
             border: 1px solid rgba(255, 193, 7, 0.3);
             color: #ffc107;
             padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+        }}
+
+        .request-info {{
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+            padding: 0.75rem 1rem;
             margin-bottom: 2rem;
             border-radius: 8px;
             font-size: 0.9rem;
             text-align: center;
+        }}
+
+        .request-info a {{
+            color: #60a5fa;
+            text-decoration: underline;
+        }}
+
+        .request-info a:hover {{
+            color: #93c5fd;
         }}
 
         .api-grid {{
@@ -408,6 +428,10 @@ def generate_index_html(network_specs, protect_specs, output_path):
 
         <div class="disclaimer">
             <strong>Disclaimer:</strong> Not supported by Ubiquiti Inc. Community-maintained specifications extracted from UniFi applications.
+        </div>
+
+        <div class="request-info">
+            Missing an API version? <a href="https://github.com/beezly/unifi-apis/issues">Open an issue</a> to request it.
         </div>
 
         <div class="api-grid">
