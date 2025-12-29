@@ -431,7 +431,7 @@ def generate_index_html(network_specs, protect_specs, output_path):
         </div>
 
         <div class="request-info">
-            Missing an API version? <a href="https://github.com/beezly/unifi-apis/issues">Open an issue</a> to request it.
+            Missing an API version? <a href="https://github.com/beezly/unifi-apis/issues/new?template=api-version-request.yml">Request it here</a>.
         </div>
 
         <div class="api-grid">

@@ -1,0 +1,62 @@
+name: API Version Request
+description: Request a new UniFi Protect or Network API version to be added
+title: "[API Request] "
+labels: ["api-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for requesting a new API version! This helps keep the repository up to date with the latest UniFi releases.
+
+  - type: dropdown
+    id: api-type
+    attributes:
+      label: API Type
+      description: Which UniFi API are you requesting?
+      options:
+        - UniFi Protect
+        - UniFi Network
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version Number
+      description: The version number you'd like added (e.g., 6.3.10 for Protect or 10.2.5 for Network)
+      placeholder: "e.g., 6.3.10"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: release-channel
+    attributes:
+      label: Release Channel
+      description: What release channel is this version from?
+      options:
+        - Official/Stable
+        - Release Candidate (RC)
+        - Early Access (EA)
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: Any additional context about this version (e.g., notable API changes, where you found the version info)
+      placeholder: "Optional: Add any helpful context here"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Verification
+      description: Please confirm the following
+      options:
+        - label: I have checked the [available versions](../README.md) and this version is not already included
+          required: true
+        - label: This is a real UniFi version (not a beta/internal build)
+          required: true
