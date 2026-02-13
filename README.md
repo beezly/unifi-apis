@@ -6,8 +6,9 @@ This repository contains OpenAPI 3.1.0 specifications for UniFi Network and Prot
 
 ### UniFi Network API
 
-12 version(s) available:
+13 version(s) available:
 
+- [10.1.85](unifi-network/10.1.85.json)
 - [10.1.84](unifi-network/10.1.84.json)
 - [10.1.83](unifi-network/10.1.83.json)
 - [10.1.80](unifi-network/10.1.80.json)
@@ -41,7 +42,7 @@ This repository contains OpenAPI 3.1.0 specifications for UniFi Network and Prot
 
 ```
 unifi-network/
-  ├── 10.1.84.json
+  ├── 10.1.85.json
   └── ...
 unifi-protect/
   ├── 6.2.88.json
@@ -63,7 +64,7 @@ These OpenAPI specifications can be used to:
 pip install openapi-python-client
 
 # Generate Network API client
-openapi-python-client generate --path unifi-network/10.1.84.json --output-path unifi-network-client
+openapi-python-client generate --path unifi-network/10.1.85.json --output-path unifi-network-client
 
 # Generate Protect API client
 openapi-python-client generate --path unifi-protect/6.2.88.json --output-path unifi-protect-client
