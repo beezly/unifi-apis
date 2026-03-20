@@ -6,12 +6,13 @@ This repository contains OpenAPI 3.1.0 specifications for UniFi Network and Prot
 
 ### UniFi Network API
 
-17 version(s) available:
+18 version(s) available:
 
 - [10.2.97](unifi-network/10.2.97.json)
 - [10.2.93](unifi-network/10.2.93.json)
 - [10.2.84](unifi-network/10.2.84.json)
 - [10.2.78](unifi-network/10.2.78.json)
+- [10.1.89](unifi-network/10.1.89.json)
 - [10.1.85](unifi-network/10.1.85.json)
 - [10.1.84](unifi-network/10.1.84.json)
 - [10.1.83](unifi-network/10.1.83.json)
